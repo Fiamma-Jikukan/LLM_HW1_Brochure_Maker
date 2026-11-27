@@ -80,6 +80,7 @@ def get_client() -> OpenAI:
 MAX_EXTRA_PAGES = 3            # pages the model may add on top of the home page
 FETCH_TIMEOUT_SECONDS = 15     # per HTTP request to a company site
 MIN_TEXT_CHARS = 200           # below this a fetched page counts as "empty"
+FETCH_DELAY_SECONDS = 1.0      # pause between requests to the same site (some sites rate-limit)
 
 # ---------------------------------------------------------------------------
 # Context budget
