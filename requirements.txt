@@ -1,0 +1,8 @@
+# Python 3.12 (tested with the course environment, llm_engineering/.venv)
+openai==2.7.1
+python-dotenv==1.2.1
+requests==2.32.5
+beautifulsoup4==4.14.2
+ipython==9.7.0
+ipykernel==7.1.0
+pytest==8.4.2
