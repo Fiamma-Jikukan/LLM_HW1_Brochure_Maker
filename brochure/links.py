@@ -26,7 +26,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import unquote, urljoin, urlsplit, urlunsplit
 
-from .config import MAX_EXTRA_PAGES, MAX_TOKENS, MODEL, Company, get_client
+from .config import MAX_EXTRA_PAGES, MAX_TOKENS, MODEL, Company, get_client, mask_secrets
 from .prompts import link_selection_messages
 
 ALLOWED_SCHEMES = {"http", "https"}
@@ -311,18 +311,19 @@ def call_link_selection(messages: list[dict]) -> dict:
                 "total_tokens": response.usage.total_tokens,
             }
     except Exception as e:  # network errors, API errors (4xx/5xx), timeouts
-        result["error"] = f"{type(e).__name__}: {e}"
+        result["error"] = mask_secrets(f"{type(e).__name__}: {e}")
     result["duration_seconds"] = round(time.perf_counter() - started, 2)
     return result
 
 
-def select_links(company: Company, candidates: dict, call=call_link_selection) -> dict:
+def select_links(company: Company, candidates: dict, call=call_link_selection, run=None) -> dict:
     """
     Build the prompt, call the model, validate the answer.
     Returns a selection record (saved as-is) with:
       status: "accepted" | "rejected" | "call_failed"
       links:  the validated links to fetch, in the model's order (empty unless accepted)
     `call` can be replaced by a fake in tests, so no real model call is made there.
+    With `run` (a RunLog), the record is saved to selections/ and the call is logged.
     """
     messages = link_selection_messages(company, candidates["candidates"])
     call_result = call(messages)
@@ -336,7 +337,7 @@ def select_links(company: Company, candidates: dict, call=call_link_selection) -
             validation = {"valid": False, "links": [], "errors": ["response cut off (finish_reason=length)"]}
         status = "accepted" if validation["valid"] else "rejected"
 
-    return {
+    selection = {
         "company_id": company.company_id,
         "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "status": status,
@@ -345,6 +346,24 @@ def select_links(company: Company, candidates: dict, call=call_link_selection) -
         "messages": messages,
         **call_result,
     }
+
+    if run is not None:
+        call_key = f"select_links:{company.company_id}"
+        attempt = run.next_attempt(call_key)
+        stem = run.file_stem(company.company_id, attempt)
+        selection["run_id"] = run.run_id
+        selection["attempt"] = attempt
+        path = save_selection(selection, run.dir / "selections", stem=stem)
+        candidates_path = run.dir / "candidates" / f"{company.company_id}.json"
+        run.log_model_call(
+            call_key=call_key, attempt=attempt, action="select_links", company_id=company.company_id,
+            audience=None, variant=None, duration_seconds=call_result.get("duration_seconds"),
+            status=status, error=call_result.get("error") or ("; ".join(validation["errors"]) or None),
+            usage=call_result.get("usage"), finish_reason=call_result.get("finish_reason"),
+            inputs={"candidates": candidates_path if candidates_path.exists() else None},
+            outputs={"selection": path},
+        )
+    return selection
 
 
 def links_to_fetch(selection: dict) -> list[dict]:
@@ -360,10 +379,10 @@ def links_to_fetch(selection: dict) -> list[dict]:
     return selection["links"]
 
 
-def save_selection(selection: dict, directory: Path) -> Path:
-    """Write the selection record (prompt, raw output, status, reasons) to <directory>/<company_id>.json."""
+def save_selection(selection: dict, directory: Path, stem: str | None = None) -> Path:
+    """Write the selection record (prompt, raw output, status, reasons) to <directory>/<stem>.json."""
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
-    path = directory / f"{selection['company_id']}.json"
+    path = directory / f"{stem or selection['company_id']}.json"
     path.write_text(json.dumps(selection, ensure_ascii=False, indent=2), encoding="utf-8")
     return path

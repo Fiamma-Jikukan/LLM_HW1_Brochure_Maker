@@ -6,13 +6,16 @@ Every function here:
   - makes exactly one model call (the client has max_retries=0),
   - shows the result (Markdown in the notebook; streamed live when stream=True),
   - saves the exact prompt, the exact context, the output text and its metadata,
+  - logs the call in the run log (runlog.py),
   - returns the result.
 
-Files written under run_dir (name = e.g. "acme_customers", "acme_customers_baseline", "comparison"):
+Files written under runs/<run_id>/ (name = e.g. "acme_customers", "acme_customers_baseline",
+"comparison"; a repeated call in the same run gets "<name>_attempt2", ... and overwrites nothing):
   prompts/<name>.json    the exact messages sent
   contexts/<name>.txt    the exact source block, and contexts/<name>.json with its inclusion report
   outputs/<name>.md      the output text, exactly as received
-  outputs/<name>.json    metadata: run_id, model, status, finish_reason, usage, duration, error
+  outputs/<name>.json    metadata: run_id, model, status, finish_reason, usage, duration, error,
+                         word count and the results of the code checks (checks.py)
 """
 
 import json
@@ -20,9 +23,11 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .config import AUDIENCES, MAX_TOKENS, MODEL, Company, get_client
+from .checks import check_output, format_checks
+from .config import AUDIENCES, MAX_TOKENS, MODEL, Company, get_client, mask_secrets
 from .context import save_context
 from .prompts import baseline_brochure_messages, brochure_messages, comparison_messages
+from .runlog import RunLog
 from .streaming import _usage_dict, accumulate_stream
 
 # ---------------------------------------------------------------------------
@@ -117,6 +122,7 @@ def run_completion(messages: list[dict], stream: bool = False, on_text=None, cli
             "usage": None,
             "error": f"{type(e).__name__}: {e}",
         }
+    result["error"] = mask_secrets(result["error"])
     result["duration_seconds"] = round(time.perf_counter() - started, 2)
     return result
 
@@ -131,14 +137,16 @@ def _write_json(path: Path, data) -> None:
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def _generate(name: str, messages: list[dict], context: dict, run_dir: Path, run_id: str,
+def _generate(name: str, messages: list[dict], context: dict, run: RunLog,
               meta: dict, stream: bool, display: bool, client=None) -> dict:
-    run_dir = Path(run_dir)
+    call_key = f"{meta['action']}:{name}"
+    attempt = run.next_attempt(call_key)
+    stem = run.file_stem(name, attempt)
     paths = {
-        "prompt": run_dir / "prompts" / f"{name}.json",
-        "context": run_dir / "contexts" / f"{name}.json",
-        "output": run_dir / "outputs" / f"{name}.md",
-        "metadata": run_dir / "outputs" / f"{name}.json",
+        "prompt": run.dir / "prompts" / f"{stem}.json",
+        "context": run.dir / "contexts" / f"{stem}.json",
+        "output": run.dir / "outputs" / f"{stem}.md",
+        "metadata": run.dir / "outputs" / f"{stem}.json",
     }
     # Inputs are saved BEFORE the call, so they exist even if the call fails.
     _write_json(paths["prompt"], messages)
@@ -152,18 +160,37 @@ def _generate(name: str, messages: list[dict], context: dict, run_dir: Path, run
     paths["output"].parent.mkdir(parents=True, exist_ok=True)
     paths["output"].write_text(result["text"], encoding="utf-8")
 
+    checks = check_output(
+        result["text"], context, kind=meta["action"], company_name=meta.get("company_name"),
+        audience=meta.get("audience"), variant=meta.get("variant", "improved"),
+    )
+    if display:
+        print(f"[checks: {name}] {format_checks(checks)}")
+
     record = {
         "name": name,
-        "run_id": run_id,
+        "run_id": run.run_id,
+        "attempt": attempt,
         **meta,
         "model": MODEL,
         "streamed": stream,
         "started_at": started_at,
         **result,
         "included_ids": context["included_ids"],
+        "word_count": checks.get("word_count"),
+        "checks": checks,
         "paths": {k: str(v) for k, v in paths.items()},
     }
     _write_json(paths["metadata"], {k: v for k, v in record.items() if k != "text"})
+
+    run.log_model_call(
+        call_key=call_key, attempt=attempt, action=meta["action"], company_id=meta["company_id"],
+        audience=meta.get("audience"), variant=meta.get("variant"),
+        duration_seconds=result["duration_seconds"], status=result["status"], error=result["error"],
+        usage=result["usage"], finish_reason=result["finish_reason"],
+        inputs={"prompt": paths["prompt"], "context": paths["context"]},
+        outputs={"output": paths["output"], "metadata": paths["metadata"]},
+    )
     return record
 
 
@@ -172,7 +199,7 @@ def _generate(name: str, messages: list[dict], context: dict, run_dir: Path, run
 # ---------------------------------------------------------------------------
 
 
-def generate_brochure(company: Company, audience: str, context: dict, run_dir: Path, run_id: str,
+def generate_brochure(company: Company, audience: str, context: dict, run: RunLog,
                       variant: str = "improved", stream: bool = False, display: bool = True,
                       client=None) -> dict:
     """
@@ -190,18 +217,25 @@ def generate_brochure(company: Company, audience: str, context: dict, run_dir: P
         name = f"{company.company_id}_{audience}_baseline"
     else:
         raise ValueError(f"Unknown variant {variant!r}; expected 'improved' or 'baseline'.")
-    meta = {"action": "brochure", "company_id": company.company_id, "audience": audience, "variant": variant}
-    return _generate(name, messages, context, run_dir, run_id, meta, stream, display, client)
+    meta = {
+        "action": "brochure",
+        "company_id": company.company_id,
+        "company_name": company.name,
+        "audience": audience,
+        "variant": variant,
+    }
+    return _generate(name, messages, context, run, meta, stream, display, client)
 
 
-def generate_comparison(company_a: Company, company_b: Company, context: dict, run_dir: Path, run_id: str,
+def generate_comparison(company_a: Company, company_b: Company, context: dict, run: RunLog,
                         stream: bool = False, display: bool = True, client=None) -> dict:
     """Generate the comparison from ONE context built from both companies' saved collections."""
     messages = comparison_messages(company_a, company_b, context)
     meta = {
         "action": "comparison",
         "company_id": f"{company_a.company_id}+{company_b.company_id}",
+        "company_name": f"{company_a.name} / {company_b.name}",
         "audience": None,
         "variant": "improved",
     }
-    return _generate("comparison", messages, context, run_dir, run_id, meta, stream, display, client)
+    return _generate("comparison", messages, context, run, meta, stream, display, client)

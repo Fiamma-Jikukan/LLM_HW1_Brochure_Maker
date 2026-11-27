@@ -52,6 +52,14 @@ def check_api_key() -> bool:
     return True
 
 
+def mask_secrets(text: str | None) -> str | None:
+    """Replace the API key's value with *** (used on every error message before it is saved)."""
+    key = os.getenv(API_KEY_ENV_VAR)
+    if text and key and key in text:
+        return text.replace(key, "***")
+    return text
+
+
 _client: OpenAI | None = None
 
 

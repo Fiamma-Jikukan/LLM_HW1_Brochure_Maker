@@ -40,11 +40,23 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-def fetch_home(company: Company, fetch=fetch_page) -> dict:
-    """Fetch the home page once. Its links feed the candidate list, its text becomes source X1."""
-    page = fetch(company.url, timeout=FETCH_TIMEOUT_SECONDS)
+def _fetch(url: str, company_id: str, purpose: str, fetch, run) -> dict:
+    """One request to a company site: timed, stamped with retrieved_at, and logged when `run` is given."""
+    started = time.perf_counter()
+    page = fetch(url, timeout=FETCH_TIMEOUT_SECONDS)
     page["retrieved_at"] = _now()
+    if run is not None:
+        run.log_site_request(
+            company_id=company_id, url=url, purpose=purpose,
+            duration_seconds=round(time.perf_counter() - started, 2),
+            http_status=page.get("http_status"), final_url=page.get("final_url"), error=page.get("error"),
+        )
     return page
+
+
+def fetch_home(company: Company, fetch=fetch_page, run=None) -> dict:
+    """Fetch the home page once. Its links feed the candidate list, its text becomes source X1."""
+    return _fetch(company.url, company.company_id, "home page", fetch, run)
 
 
 def page_status(page: dict) -> str:
@@ -75,13 +87,13 @@ def make_record(company: Company, number: int, url: str, page: dict, note: str) 
     }
 
 
-def collect_sources(company: Company, home_page: dict, selection: dict, fetch=fetch_page) -> dict:
+def collect_sources(company: Company, home_page: dict, selection: dict, fetch=fetch_page, run=None) -> dict:
     """
     Build the source collection for one company.
     `home_page` is the result of fetch_home() (reused, not fetched again).
     `selection` must be an accepted link selection: links_to_fetch() raises before any
     request is made if it was rejected or the call failed.
-    `fetch` can be replaced by a fake in tests.
+    `fetch` can be replaced by a fake in tests. With `run`, every request is logged.
     """
     links = links_to_fetch(selection)   # guard: raises if the selection was not accepted
 
@@ -91,8 +103,7 @@ def collect_sources(company: Company, home_page: dict, selection: dict, fetch=fe
 
     for number, link in enumerate(links, start=2):
         time.sleep(FETCH_DELAY_SECONDS)
-        page = fetch(link["normalized_url"], timeout=FETCH_TIMEOUT_SECONDS)
-        page["retrieved_at"] = _now()
+        page = _fetch(link["normalized_url"], company.company_id, f"selected page {company.letter}{number}", fetch, run)
         site_requests += 1
         note = f"selected by the model as '{link['type']}': {link['reason']}"
         records.append(make_record(company, number, link["normalized_url"], page, note))
@@ -109,7 +120,7 @@ def collect_sources(company: Company, home_page: dict, selection: dict, fetch=fe
 
 
 def add_replacement_source(
-    collection: dict, candidates: dict, url: str, reason: str, fetch=fetch_page
+    collection: dict, candidates: dict, url: str, reason: str, fetch=fetch_page, run=None
 ) -> dict:
     """
     Add a replacement page when there is not enough usable information.
@@ -133,8 +144,7 @@ def add_replacement_source(
 
     company = Company(collection["company_id"], collection["company_name"], collection["home_url"], collection["letter"])
     time.sleep(FETCH_DELAY_SECONDS)
-    page = fetch(normalized, timeout=FETCH_TIMEOUT_SECONDS)
-    page["retrieved_at"] = _now()
+    page = _fetch(normalized, company.company_id, f"replacement {company.letter}{len(records) + 1}", fetch, run)
     collection["site_requests"] += 1
     record = make_record(company, len(records) + 1, normalized, page, f"replacement: {reason}")
     records.append(record)
