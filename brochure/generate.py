@@ -45,6 +45,13 @@ def _in_notebook() -> bool:
         return False
 
 
+def rtl_markdown(text: str):
+    """Markdown shown right-to-left (Hebrew). Display only: the saved text is never changed."""
+    from IPython.display import Markdown
+
+    return Markdown(f'<div dir="rtl">\n\n{text}\n\n</div>')
+
+
 class _Display:
     """Shows text that may grow over time (streaming) and its final state."""
 
@@ -53,24 +60,20 @@ class _Display:
         self.notebook = enabled and _in_notebook()
         self.handle = None
         if self.notebook:
-            from IPython.display import Markdown, display
+            from IPython.display import display
 
-            self.handle = display(Markdown(""), display_id=True)
+            self.handle = display(rtl_markdown(""), display_id=True)
 
     def update(self, text: str) -> None:
         if self.notebook:
-            from IPython.display import Markdown
-
-            self.handle.update(Markdown(text))
+            self.handle.update(rtl_markdown(text))
 
     def final(self, text: str, status: str, error: str | None) -> None:
         if not self.enabled:
             return
         note = "" if status == "complete" else f"\n\n> **[{status}]** {error or ''}"
         if self.notebook:
-            from IPython.display import Markdown
-
-            self.handle.update(Markdown(text + note))
+            self.handle.update(rtl_markdown(text + note))
         else:
             print(text + note)
 
@@ -86,9 +89,9 @@ def run_completion(messages: list[dict], stream: bool = False, on_text=None, cli
     Status is "complete", "partial" or "failed" (see streaming.py); a failure is returned, not raised.
     `client` can be replaced by a fake in tests.
     """
-    client = client or get_client()
     started = time.perf_counter()
     try:
+        client = client or get_client()
         if stream:
             events = client.chat.completions.create(
                 model=MODEL,

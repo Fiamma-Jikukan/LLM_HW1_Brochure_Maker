@@ -44,6 +44,7 @@
   <text x="36" y="140" class="panel-title">A. Per company (×2): runs once, result saved</text>
   <rect x="650" y="116" width="610" height="548" rx="10" class="panel"/>
   <text x="666" y="140" class="panel-title">B. Per output (×6): built only from the saved sources</text>
+  <text x="666" y="158" class="d"><tspan font-weight="700">4 brochures + baseline:</tspan> one company's sources ·  <tspan font-weight="700">comparison:</tspan> A + B together, after both are collected</text>
 
   <!-- ===== Left panel ===== -->
   <!-- 1 fetch_home -->
@@ -107,15 +108,16 @@
   <text x="228" y="496" class="lbl">yes</text>
 
   <!-- bridge: saved sources -> context -->
-  <path d="M610,542 L640,542 L640,196 L668,196" class="flow" marker-end="url(#arrow)"/>
+  <path d="M610,542 L640,542 L640,210 L668,210" class="flow" marker-end="url(#arrow)"/>
 
-  <!-- ===== Right panel ===== -->
+  <!-- ===== Right panel (shifted down to make room for the subtitle) ===== -->
+  <g transform="translate(0,14)">
   <!-- 5 build_context -->
   <rect x="670" y="158" width="360" height="78" rx="8" class="code"/>
   <text x="684" y="181" class="h">5  build_context</text>
   <text x="684" y="200" class="d">only "ok" sources · 12,000-char budget, fair split</text>
   <text x="684" y="215" class="d">(a long page is shortened; it can't push others out)</text>
-  <text x="684" y="230" class="d">comparison: one budget for both · IDs never cut</text>
+  <text x="684" y="230" class="d">comparison: A + B share one budget · IDs never cut</text>
   <rect x="1060" y="179" width="180" height="36" rx="6" class="file"/>
   <text x="1150" y="202" class="f" text-anchor="middle">contexts/&lt;name&gt;</text>
   <path d="M1030,197 L1058,197" class="save" marker-end="url(#arrow)"/>
@@ -152,7 +154,7 @@
   <!-- results -->
   <rect x="670" y="518" width="570" height="50" rx="8" class="result"/>
   <text x="684" y="539" class="h">Outputs (Hebrew, cited [A2]-style, with source list)</text>
-  <text x="684" y="558" class="d">4 brochures (2 companies × customers / candidates) · comparison table · baseline brochure</text>
+  <text x="684" y="558" class="d">4 brochures (2 companies × customers / candidates) · comparison table (A vs B) · baseline brochure</text>
 
   <!-- human -->
   <rect x="670" y="592" width="570" height="54" rx="8" class="human"/>
@@ -165,6 +167,7 @@
   <path d="M850,408 L850,430" class="flow" marker-end="url(#arrow)"/>
   <path d="M850,494 L850,516" class="flow" marker-end="url(#arrow)"/>
   <path d="M850,568 L850,590" class="flow" marker-end="url(#arrow)"/>
+  </g>
 
   <!-- Run log band -->
   <rect x="20" y="680" width="1240" height="66" rx="8" class="band"/>

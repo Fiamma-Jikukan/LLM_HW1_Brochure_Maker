@@ -1,0 +1,114 @@
+........................................................................ [ 66%]
+....................................                                     [100%]
+=================================== PASSES ====================================
+- generated xml file: C:\Users\User\Documents\cursor\LLL_HM\LLM_HW1_Brochure_Maker\test_results\junit.xml -
+=========================== short test summary info ===========================
+PASSED tests/test_checks_runlog.py::test_citation_forms_and_word_count
+PASSED tests/test_checks_runlog.py::test_good_brochure_passes
+PASSED tests/test_checks_runlog.py::test_cited_id_must_be_in_this_calls_context
+PASSED tests/test_checks_runlog.py::test_source_list_problems
+PASSED tests/test_checks_runlog.py::test_word_count_range
+PASSED tests/test_checks_runlog.py::test_no_citations_code_block_or_none
+PASSED tests/test_checks_runlog.py::test_required_headings_for_the_improved_variant
+PASSED tests/test_checks_runlog.py::test_comparison_table_needs_all_four_dimensions
+PASSED tests/test_checks_runlog.py::test_every_call_is_logged_with_attempts_and_tokens_only_when_reported
+PASSED tests/test_checks_runlog.py::test_site_requests_are_counted_separately
+PASSED tests/test_checks_runlog.py::test_the_api_key_never_reaches_a_file
+PASSED tests/test_links.py::test_valid_links_get_one_canonical_form[/about-https://www.acme.com/about]
+PASSED tests/test_links.py::test_valid_links_get_one_canonical_form[about/-https://www.acme.com/about]
+PASSED tests/test_links.py::test_valid_links_get_one_canonical_form[https://acme.com/about#team-https://www.acme.com/about]
+PASSED tests/test_links.py::test_valid_links_get_one_canonical_form[http://www.acme.com/about-https://www.acme.com/about]
+PASSED tests/test_links.py::test_valid_links_get_one_canonical_form[//acme.com//about//-https://www.acme.com/about]
+PASSED tests/test_links.py::test_valid_links_get_one_canonical_form[/products?id=2-https://www.acme.com/products?id=2]
+PASSED tests/test_links.py::test_valid_links_get_one_canonical_form[/photos-https://www.acme.com/photos]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[-empty]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[   -empty]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[None-empty]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[mailto:info@acme.com-mailto]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[tel:+972-3-1234567-tel]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[javascript:void(0)-javascript]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[ftp://acme.com/file-ftp]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[https://jobs.acme.com/open-outside the site]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[https://linkedin.com/company/acme-outside the site]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[https://acme.com.evil.io/about-outside the site]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[/-home page]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[https://acme.com/-home page]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[/?lang=he-home page]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[#top-home page]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[/privacy-policy-privacy]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[/Terms-of-Service-privacy]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[/legal-privacy]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[/cookies-privacy]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[/%D7%AA%D7%A0%D7%90%D7%99-%D7%A9%D7%99%D7%9E%D7%95%D7%A9-privacy]
+PASSED tests/test_links.py::test_invalid_links_are_dropped_with_a_reason[/brochure.pdf-file]
+PASSED tests/test_links.py::test_build_candidates_dedupes_and_records_every_dropped_link
+PASSED tests/test_links.py::test_candidate_fixture
+PASSED tests/test_links.py::test_valid_selection_is_accepted_and_normalized
+PASSED tests/test_links.py::test_empty_selection_is_valid
+PASSED tests/test_links.py::test_bad_output_rejects_the_whole_response[malformed JSON]
+PASSED tests/test_links.py::test_bad_output_rejects_the_whole_response[URL not in the input list]
+PASSED tests/test_links.py::test_bad_output_rejects_the_whole_response[duplicate after normalization]
+PASSED tests/test_links.py::test_bad_output_rejects_the_whole_response[forbidden item in a partly valid list]
+PASSED tests/test_links.py::test_bad_output_rejects_the_whole_response[home page selected]
+PASSED tests/test_links.py::test_bad_output_rejects_the_whole_response[another site]
+PASSED tests/test_links.py::test_bad_output_rejects_the_whole_response[more than 3 links]
+PASSED tests/test_links.py::test_bad_output_rejects_the_whole_response[empty reason]
+PASSED tests/test_links.py::test_bad_output_rejects_the_whole_response[missing field]
+PASSED tests/test_links.py::test_bad_output_rejects_the_whole_response[extra field]
+PASSED tests/test_links.py::test_bad_output_rejects_the_whole_response[field is not a string]
+PASSED tests/test_links.py::test_bad_output_rejects_the_whole_response[missing 'links']
+PASSED tests/test_links.py::test_bad_output_rejects_the_whole_response['links' not a list]
+PASSED tests/test_links.py::test_bad_output_rejects_the_whole_response[top level not an object]
+PASSED tests/test_links.py::test_bad_output_rejects_the_whole_response[empty response]
+PASSED tests/test_links.py::test_rejected_selection_fetches_no_page[malformed JSON]
+PASSED tests/test_links.py::test_rejected_selection_fetches_no_page[URL not in the input list]
+PASSED tests/test_links.py::test_rejected_selection_fetches_no_page[duplicate after normalization]
+PASSED tests/test_links.py::test_rejected_selection_fetches_no_page[forbidden item in a partly valid list]
+PASSED tests/test_links.py::test_rejected_selection_fetches_no_page[home page selected]
+PASSED tests/test_links.py::test_rejected_selection_fetches_no_page[another site]
+PASSED tests/test_links.py::test_rejected_selection_fetches_no_page[more than 3 links]
+PASSED tests/test_links.py::test_rejected_selection_fetches_no_page[empty reason]
+PASSED tests/test_links.py::test_rejected_selection_fetches_no_page[missing field]
+PASSED tests/test_links.py::test_rejected_selection_fetches_no_page[extra field]
+PASSED tests/test_links.py::test_rejected_selection_fetches_no_page[field is not a string]
+PASSED tests/test_links.py::test_rejected_selection_fetches_no_page[missing 'links']
+PASSED tests/test_links.py::test_rejected_selection_fetches_no_page['links' not a list]
+PASSED tests/test_links.py::test_rejected_selection_fetches_no_page[top level not an object]
+PASSED tests/test_links.py::test_rejected_selection_fetches_no_page[empty response]
+PASSED tests/test_links.py::test_failed_call_and_cut_off_response_are_not_accepted
+PASSED tests/test_links.py::test_accepted_selection_keeps_the_model_order
+PASSED tests/test_scraper.py::test_ok_page_keeps_full_text_links_title_and_final_url
+PASSED tests/test_scraper.py::test_timeout_is_reported_not_raised
+PASSED tests/test_scraper.py::test_http_error_page_is_not_content
+PASSED tests/test_scraper.py::test_non_html_is_rejected
+PASSED tests/test_scraper.py::test_class_functions_are_unchanged
+PASSED tests/test_sources_context.py::test_records_have_ids_in_order_and_all_required_fields
+PASSED tests/test_sources_context.py::test_status_ok_empty_failed
+PASSED tests/test_sources_context.py::test_only_ok_sources_are_evidence_and_gaps_are_shown
+PASSED tests/test_sources_context.py::test_home_page_is_not_fetched_again
+PASSED tests/test_sources_context.py::test_replacement_uses_a_free_id_and_follows_the_rules
+PASSED tests/test_sources_context.py::test_no_replacement_beyond_the_page_limit
+PASSED tests/test_sources_context.py::test_fair_shares
+PASSED tests/test_sources_context.py::test_cut_text_prefers_a_line_break
+PASSED tests/test_sources_context.py::test_long_source_is_shortened_without_pushing_others_out
+PASSED tests/test_sources_context.py::test_empty_and_failed_sources_are_left_out_with_reasons
+PASSED tests/test_sources_context.py::test_ids_and_headers_survive_a_tiny_budget
+PASSED tests/test_sources_context.py::test_comparison_shares_one_budget_between_companies
+PASSED tests/test_sources_context.py::test_instructions_stay_whole_with_a_very_long_source
+PASSED tests/test_streaming.py::test_mock_sequence_saves_exactly_the_accumulated_text
+PASSED tests/test_streaming.py::test_stream_broken_mid_way_is_partial
+PASSED tests/test_streaming.py::test_stream_broken_before_any_text_is_failed
+PASSED tests/test_streaming.py::test_status_rules[events0-partial]
+PASSED tests/test_streaming.py::test_status_rules[events1-partial]
+PASSED tests/test_streaming.py::test_status_rules[events2-failed]
+PASSED tests/test_streaming.py::test_status_rules[events3-complete]
+PASSED tests/test_streaming.py::test_dict_shaped_events_also_work
+PASSED tests/test_streaming.py::test_run_completion_never_raises_and_never_writes_none[client0-complete-\u05d8\u05e7\u05e1\u05d8]
+PASSED tests/test_streaming.py::test_run_completion_never_raises_and_never_writes_none[client1-failed-]
+PASSED tests/test_streaming.py::test_run_completion_never_raises_and_never_writes_none[client2-failed-]
+PASSED tests/test_streaming.py::test_run_completion_never_raises_and_never_writes_none[client3-partial-abc]
+PASSED tests/test_streaming.py::test_run_completion_never_raises_and_never_writes_none[client4-failed-]
+PASSED tests/test_streaming.py::test_only_supported_parameters_are_sent
+PASSED tests/test_streaming.py::test_streamed_brochure_saves_exact_text_and_marks_partial
+PASSED tests/test_streaming.py::test_generation_without_a_key_fails_cleanly
+108 passed in 0.38s
