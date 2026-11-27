@@ -1,0 +1,79 @@
+{
+  "name": "lastprice_customers",
+  "run_id": "20261127-165418-3575",
+  "attempt": 1,
+  "action": "brochure",
+  "company_id": "lastprice",
+  "company_name": "לאסטפרייס",
+  "audience": "customers",
+  "variant": "improved",
+  "model": "claude-opus-5-5",
+  "streamed": false,
+  "started_at": "2026-11-27T17:03:42+00:00",
+  "status": "complete",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 10247,
+    "completion_tokens": 2095,
+    "total_tokens": 12342
+  },
+  "error": null,
+  "duration_seconds": 18.35,
+  "included_ids": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+  ],
+  "word_count": 228,
+  "checks": {
+    "kind": "brochure",
+    "cited_ids": [
+      "B1",
+      "B4"
+    ],
+    "included_ids": [
+      "B1",
+      "B2",
+      "B3",
+      "B4"
+    ],
+    "unknown_ids": [],
+    "source_list": [
+      {
+        "source_id": "B1",
+        "url": "https://www.lastprice.co.il/"
+      },
+      {
+        "source_id": "B4",
+        "url": "https://www.lastprice.co.il/WhyLP"
+      }
+    ],
+    "missing_info_mentions": 5,
+    "word_count": 228,
+    "word_range": [
+      200,
+      300
+    ],
+    "word_count_ok": true,
+    "structure": {
+      "expected": [
+        "# לאסטפרייס: מידע ללקוחות פוטנציאליים",
+        "## הבעיה שהחברה פותרת",
+        "## מוצרים ושירותים",
+        "## שימושים וקהלי יעד",
+        "## מה כדאי לברר לפני פנייה"
+      ],
+      "missing": [],
+      "in_order": true
+    },
+    "problems": [],
+    "passed": true
+  },
+  "paths": {
+    "prompt": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261127-165418-3575\\prompts\\lastprice_customers.json",
+    "context": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261127-165418-3575\\contexts\\lastprice_customers.json",
+    "output": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261127-165418-3575\\outputs\\lastprice_customers.md",
+    "metadata": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261127-165418-3575\\outputs\\lastprice_customers.json"
+  }
+}
