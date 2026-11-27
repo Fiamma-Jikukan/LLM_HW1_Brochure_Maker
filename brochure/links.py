@@ -21,10 +21,13 @@ Every dropped href is kept with its reason, so the saved list documents the filt
 """
 
 import json
+import time
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import unquote, urljoin, urlsplit, urlunsplit
 
-from .config import Company
+from .config import MAX_EXTRA_PAGES, MAX_TOKENS, MODEL, Company, get_client
+from .prompts import link_selection_messages
 
 ALLOWED_SCHEMES = {"http", "https"}
 
@@ -165,4 +168,202 @@ def save_candidates(candidates: dict, directory: Path) -> Path:
     directory.mkdir(parents=True, exist_ok=True)
     path = directory / f"{candidates['company_id']}.json"
     path.write_text(json.dumps(candidates, ensure_ascii=False, indent=2), encoding="utf-8")
+    return path
+
+
+# ===========================================================================
+# Link selection by the model, and validation of its answer
+# ===========================================================================
+#
+# The model must return {"links": [{"type": str, "url": str, "reason": str}, ...]}.
+# The request asks for this shape with a strict JSON schema, but the answer is still
+# validated in code before ANY page is fetched. If anything is wrong, the whole answer is
+# rejected (nothing is silently dropped or repaired) and no page from it is fetched.
+
+LINK_ITEM_FIELDS = ("type", "url", "reason")
+
+LINK_SELECTION_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "links": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {field: {"type": "string"} for field in LINK_ITEM_FIELDS},
+                "required": list(LINK_ITEM_FIELDS),
+                "additionalProperties": False,
+            },
+        }
+    },
+    "required": ["links"],
+    "additionalProperties": False,
+}
+
+# Anthropic's OpenAI-compatible endpoint accepts only json_schema with strict=True
+# (json_object, as used in the class notebook, returns a 400 error there).
+LINK_SELECTION_RESPONSE_FORMAT = {
+    "type": "json_schema",
+    "json_schema": {"name": "link_selection", "strict": True, "schema": LINK_SELECTION_SCHEMA},
+}
+
+
+def validate_selection(raw_output: str | None, candidates: dict) -> dict:
+    """
+    Check the model's raw answer against the contract and the candidate list.
+
+    `candidates` is the dict returned by build_candidates().
+    Returns {"valid": bool, "links": [...], "errors": [...]}.
+    `links` is filled only when valid; each item keeps the model's fields and adds
+    "normalized_url", the canonical URL that will be fetched.
+    Every problem found is listed in `errors` (validation does not stop at the first one).
+    """
+    errors: list[str] = []
+
+    if raw_output is None or not raw_output.strip():
+        return {"valid": False, "links": [], "errors": ["empty response"]}
+    try:
+        data = json.loads(raw_output)
+    except json.JSONDecodeError as e:
+        return {"valid": False, "links": [], "errors": [f"invalid JSON: {e}"]}
+
+    if not isinstance(data, dict):
+        return {"valid": False, "links": [], "errors": ["top level is not a JSON object"]}
+    if "links" not in data:
+        return {"valid": False, "links": [], "errors": ["missing field 'links'"]}
+    extra_keys = set(data) - {"links"}
+    if extra_keys:
+        errors.append(f"unexpected top-level fields: {sorted(extra_keys)}")
+    items = data["links"]
+    if not isinstance(items, list):
+        return {"valid": False, "links": [], "errors": errors + ["'links' is not a list"]}
+    if len(items) > MAX_EXTRA_PAGES:
+        errors.append(f"{len(items)} links selected; at most {MAX_EXTRA_PAGES} are allowed")
+
+    base_url = candidates.get("home_final_url") or candidates["configured_url"]
+    hosts = set(candidates["site_hosts"])
+    allowed = set(candidates["candidates"])
+    seen: dict[str, int] = {}
+    accepted: list[dict] = []
+
+    for i, item in enumerate(items, start=1):
+        where = f"item {i}"
+        if not isinstance(item, dict):
+            errors.append(f"{where}: not an object")
+            continue
+        missing = [f for f in LINK_ITEM_FIELDS if f not in item]
+        if missing:
+            errors.append(f"{where}: missing fields {missing}")
+        extra = set(item) - set(LINK_ITEM_FIELDS)
+        if extra:
+            errors.append(f"{where}: unexpected fields {sorted(extra)}")
+        for field in LINK_ITEM_FIELDS:
+            if field in item and (not isinstance(item[field], str) or not item[field].strip()):
+                errors.append(f"{where}: '{field}' must be a non-empty string")
+
+        url = item.get("url")
+        if not isinstance(url, str) or not url.strip():
+            continue
+        normalized, reason = normalize_url(url, base_url, hosts)
+        if normalized is None:
+            errors.append(f"{where}: {url!r} breaks the site/filter rules ({reason})")
+            continue
+        if normalized not in allowed:
+            errors.append(f"{where}: {url!r} is not in the candidate list sent to the model")
+        if normalized in seen:
+            errors.append(f"{where}: {url!r} duplicates item {seen[normalized]} after normalization")
+        else:
+            seen[normalized] = i
+        accepted.append({**item, "normalized_url": normalized})
+
+    if errors:
+        return {"valid": False, "links": [], "errors": errors}
+    return {"valid": True, "links": accepted, "errors": []}
+
+
+def call_link_selection(messages: list[dict]) -> dict:
+    """
+    One model call (no retries). Returns the raw text and call metadata;
+    a failed call is returned as data (error set, raw_output None), not raised.
+    """
+    started = time.perf_counter()
+    result = {
+        "model": MODEL,
+        "raw_output": None,
+        "finish_reason": None,
+        "usage": None,
+        "error": None,
+        "duration_seconds": None,
+    }
+    try:
+        response = get_client().chat.completions.create(
+            model=MODEL,
+            max_tokens=MAX_TOKENS,
+            messages=messages,
+            response_format=LINK_SELECTION_RESPONSE_FORMAT,
+        )
+        choice = response.choices[0] if response.choices else None
+        result["raw_output"] = choice.message.content if choice else None
+        result["finish_reason"] = choice.finish_reason if choice else None
+        if response.usage:
+            result["usage"] = {
+                "prompt_tokens": response.usage.prompt_tokens,
+                "completion_tokens": response.usage.completion_tokens,
+                "total_tokens": response.usage.total_tokens,
+            }
+    except Exception as e:  # network errors, API errors (4xx/5xx), timeouts
+        result["error"] = f"{type(e).__name__}: {e}"
+    result["duration_seconds"] = round(time.perf_counter() - started, 2)
+    return result
+
+
+def select_links(company: Company, candidates: dict, call=call_link_selection) -> dict:
+    """
+    Build the prompt, call the model, validate the answer.
+    Returns a selection record (saved as-is) with:
+      status: "accepted" | "rejected" | "call_failed"
+      links:  the validated links to fetch, in the model's order (empty unless accepted)
+    `call` can be replaced by a fake in tests, so no real model call is made there.
+    """
+    messages = link_selection_messages(company, candidates["candidates"])
+    call_result = call(messages)
+
+    if call_result.get("error"):
+        validation = {"valid": False, "links": [], "errors": [f"model call failed: {call_result['error']}"]}
+        status = "call_failed"
+    else:
+        validation = validate_selection(call_result.get("raw_output"), candidates)
+        if call_result.get("finish_reason") == "length" and validation["valid"]:
+            validation = {"valid": False, "links": [], "errors": ["response cut off (finish_reason=length)"]}
+        status = "accepted" if validation["valid"] else "rejected"
+
+    return {
+        "company_id": company.company_id,
+        "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "status": status,
+        "links": validation["links"],
+        "rejection_reasons": validation["errors"],
+        "messages": messages,
+        **call_result,
+    }
+
+
+def links_to_fetch(selection: dict) -> list[dict]:
+    """
+    The only way to get URLs to fetch from a selection: refuses unless it was accepted.
+    This is the guard that stops fetching when the model's answer was rejected.
+    """
+    if selection.get("status") != "accepted":
+        raise ValueError(
+            f"Link selection for '{selection.get('company_id')}' was {selection.get('status')}; "
+            f"no pages are fetched from it. Reasons: {selection.get('rejection_reasons')}"
+        )
+    return selection["links"]
+
+
+def save_selection(selection: dict, directory: Path) -> Path:
+    """Write the selection record (prompt, raw output, status, reasons) to <directory>/<company_id>.json."""
+    directory = Path(directory)
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / f"{selection['company_id']}.json"
+    path.write_text(json.dumps(selection, ensure_ascii=False, indent=2), encoding="utf-8")
     return path
