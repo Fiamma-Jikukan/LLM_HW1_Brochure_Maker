@@ -97,6 +97,7 @@ OUTPUT_LANGUAGE = "Hebrew"
 MIN_WORDS = 200                # counted with str.split(), headings included,
 MAX_WORDS = 300                # the closing source list excluded
 MISSING_INFO_PHRASE = "לא נמצא במקורות שנמסרו למודל"
+SOURCES_HEADING = "## מקורות"  # the closing source list starts here (not counted as words)
 
 # ---------------------------------------------------------------------------
 # Companies (chosen later; both must be in the same field)
