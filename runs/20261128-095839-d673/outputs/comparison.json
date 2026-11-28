@@ -1,0 +1,97 @@
+{
+  "name": "comparison",
+  "run_id": "20261128-095839-d673",
+  "attempt": 1,
+  "action": "comparison",
+  "company_id": "ivory+lastprice",
+  "company_name": "אייבורי / לאסטפרייס",
+  "audience": null,
+  "variant": "improved",
+  "model": "claude-opus-5-5",
+  "streamed": false,
+  "started_at": "2026-11-28T10:00:22+00:00",
+  "status": "complete",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 10418,
+    "completion_tokens": 3075,
+    "total_tokens": 13493
+  },
+  "error": null,
+  "duration_seconds": 28.2,
+  "included_ids": [
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+  ],
+  "word_count": null,
+  "checks": {
+    "kind": "comparison",
+    "cited_ids": [
+      "A1",
+      "A2",
+      "A3",
+      "B1",
+      "B2",
+      "B3",
+      "B4"
+    ],
+    "included_ids": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "B1",
+      "B2",
+      "B3",
+      "B4"
+    ],
+    "unknown_ids": [],
+    "source_list": [
+      {
+        "source_id": "A1",
+        "url": "https://www.ivory.co.il/"
+      },
+      {
+        "source_id": "A2",
+        "url": "https://www.ivory.co.il/jobs"
+      },
+      {
+        "source_id": "A3",
+        "url": "https://www.ivory.co.il/stores.html"
+      },
+      {
+        "source_id": "B1",
+        "url": "https://www.lastprice.co.il/"
+      },
+      {
+        "source_id": "B2",
+        "url": "https://www.lastprice.co.il/About"
+      },
+      {
+        "source_id": "B3",
+        "url": "https://www.lastprice.co.il/Jobs"
+      },
+      {
+        "source_id": "B4",
+        "url": "https://www.lastprice.co.il/WhyLP"
+      }
+    ],
+    "missing_info_mentions": 3,
+    "table_rows": 6,
+    "missing_dimensions": [],
+    "problems": [],
+    "passed": true
+  },
+  "paths": {
+    "prompt": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095839-d673\\prompts\\comparison.json",
+    "context": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095839-d673\\contexts\\comparison.json",
+    "output": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095839-d673\\outputs\\comparison.md",
+    "metadata": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095839-d673\\outputs\\comparison.json"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "run_id": "20261127-165418-3575",
+  "model_calls": 8,
+  "planned_model_calls": 8,
+  "model_calls_by_action": {
+    "select_links": 2,
+    "brochure": 5,
+    "comparison": 1
+  },
+  "repeated_attempts": 0,
+  "failed_model_calls": 0,
+  "model_seconds": 136.93,
+  "tokens_reported": {
+    "prompt_tokens": 165085,
+    "completion_tokens": 14904,
+    "total_tokens": 179989
+  },
+  "calls_with_token_data": 8,
+  "site_requests": 8,
+  "site_requests_by_company": {
+    "ivory": 4,
+    "lastprice": 4
+  },
+  "failed_site_requests": 0
+}

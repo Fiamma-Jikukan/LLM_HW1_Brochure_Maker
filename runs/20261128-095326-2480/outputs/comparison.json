@@ -1,0 +1,71 @@
+{
+  "name": "comparison",
+  "run_id": "20261128-095326-2480",
+  "attempt": 1,
+  "action": "comparison",
+  "company_id": "ivory+lastprice",
+  "company_name": "אייבורי / לאסטפרייס",
+  "audience": null,
+  "variant": "improved",
+  "model": "claude-opus-5-5",
+  "streamed": false,
+  "started_at": "2026-11-28T09:55:05+00:00",
+  "status": "complete",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 10696,
+    "completion_tokens": 2589,
+    "total_tokens": 13285
+  },
+  "error": null,
+  "duration_seconds": 24.14,
+  "included_ids": [
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+  ],
+  "word_count": null,
+  "checks": {
+    "kind": "comparison",
+    "cited_ids": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "B1",
+      "B2",
+      "B3",
+      "B4"
+    ],
+    "included_ids": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "B1",
+      "B2",
+      "B3",
+      "B4"
+    ],
+    "unknown_ids": [],
+    "source_list": [],
+    "missing_info_mentions": 5,
+    "table_rows": 6,
+    "missing_dimensions": [],
+    "problems": [
+      "cited but missing from the source list: ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4']"
+    ],
+    "passed": false
+  },
+  "paths": {
+    "prompt": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095326-2480\\prompts\\comparison.json",
+    "context": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095326-2480\\contexts\\comparison.json",
+    "output": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095326-2480\\outputs\\comparison.md",
+    "metadata": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095326-2480\\outputs\\comparison.json"
+  }
+}

@@ -215,11 +215,16 @@ Write in this order:
 Keep it concise (about 250-400 words before the source list).
 """
 
+SOURCE_LIST_RULE = f"""\
+- End with the source list: a line "{SOURCES_HEADING}" followed by one line per cited source,
+  in the form "- [A1] https://..." (the ID in square brackets, then the URL from its <source> tag).
+"""
+
 COMPARISON_OUTPUT_RULES = f"""\
 Output rules:
 - Write in {OUTPUT_LANGUAGE}. Keep company, product and technical names as they appear in the sources.
 - Markdown only, no code blocks.
-"""
+{SOURCE_LIST_RULE}"""
 
 
 def comparison_messages(company_a: Company, company_b: Company, context: dict) -> list[dict]:

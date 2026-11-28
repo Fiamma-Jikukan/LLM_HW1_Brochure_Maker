@@ -1,0 +1,79 @@
+{
+  "name": "lastprice_candidates",
+  "run_id": "20261128-095839-d673",
+  "attempt": 1,
+  "action": "brochure",
+  "company_id": "lastprice",
+  "company_name": "לאסטפרייס",
+  "audience": "candidates",
+  "variant": "improved",
+  "model": "claude-opus-5-5",
+  "streamed": false,
+  "started_at": "2026-11-28T10:00:08+00:00",
+  "status": "complete",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 9792,
+    "completion_tokens": 1593,
+    "total_tokens": 11385
+  },
+  "error": null,
+  "duration_seconds": 13.55,
+  "included_ids": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+  ],
+  "word_count": 249,
+  "checks": {
+    "kind": "brochure",
+    "cited_ids": [
+      "B2",
+      "B3"
+    ],
+    "included_ids": [
+      "B1",
+      "B2",
+      "B3",
+      "B4"
+    ],
+    "unknown_ids": [],
+    "source_list": [
+      {
+        "source_id": "B2",
+        "url": "https://www.lastprice.co.il/About"
+      },
+      {
+        "source_id": "B3",
+        "url": "https://www.lastprice.co.il/Jobs"
+      }
+    ],
+    "missing_info_mentions": 3,
+    "word_count": 249,
+    "word_range": [
+      200,
+      300
+    ],
+    "word_count_ok": true,
+    "structure": {
+      "expected": [
+        "# לאסטפרייס: מידע למועמדים לעבודה",
+        "## במה החברה עוסקת",
+        "## תפקידים וצוותים שפורסמו",
+        "## סביבת העבודה",
+        "## תהליך המועמדות"
+      ],
+      "missing": [],
+      "in_order": true
+    },
+    "problems": [],
+    "passed": true
+  },
+  "paths": {
+    "prompt": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095839-d673\\prompts\\lastprice_candidates.json",
+    "context": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095839-d673\\contexts\\lastprice_candidates.json",
+    "output": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095839-d673\\outputs\\lastprice_candidates.md",
+    "metadata": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095839-d673\\outputs\\lastprice_candidates.json"
+  }
+}

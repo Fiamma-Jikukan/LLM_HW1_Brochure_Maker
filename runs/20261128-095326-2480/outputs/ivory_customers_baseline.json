@@ -1,0 +1,73 @@
+{
+  "name": "ivory_customers_baseline",
+  "run_id": "20261128-095326-2480",
+  "attempt": 1,
+  "action": "brochure",
+  "company_id": "ivory",
+  "company_name": "אייבורי",
+  "audience": "customers",
+  "variant": "baseline",
+  "model": "claude-opus-5-5",
+  "streamed": false,
+  "started_at": "2026-11-28T09:55:29+00:00",
+  "status": "complete",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 10114,
+    "completion_tokens": 2264,
+    "total_tokens": 12378
+  },
+  "error": null,
+  "duration_seconds": 19.66,
+  "included_ids": [
+    "A1",
+    "A2",
+    "A3",
+    "A4"
+  ],
+  "word_count": 221,
+  "checks": {
+    "kind": "brochure",
+    "cited_ids": [
+      "A1",
+      "A3",
+      "A4"
+    ],
+    "included_ids": [
+      "A1",
+      "A2",
+      "A3",
+      "A4"
+    ],
+    "unknown_ids": [],
+    "source_list": [
+      {
+        "source_id": "A1",
+        "url": "https://www.ivory.co.il/"
+      },
+      {
+        "source_id": "A3",
+        "url": "https://www.ivory.co.il/stores.html"
+      },
+      {
+        "source_id": "A4",
+        "url": "https://www.ivory.co.il/catalog.php?act=all_categories"
+      }
+    ],
+    "missing_info_mentions": 5,
+    "word_count": 221,
+    "word_range": [
+      200,
+      300
+    ],
+    "word_count_ok": true,
+    "problems": [],
+    "passed": true
+  },
+  "paths": {
+    "prompt": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095326-2480\\prompts\\ivory_customers_baseline.json",
+    "context": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095326-2480\\contexts\\ivory_customers_baseline.json",
+    "output": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095326-2480\\outputs\\ivory_customers_baseline.md",
+    "metadata": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095326-2480\\outputs\\ivory_customers_baseline.json"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "name": "ivory_candidates",
+  "run_id": "20261128-095839-d673",
+  "attempt": 1,
+  "action": "brochure",
+  "company_id": "ivory",
+  "company_name": "אייבורי",
+  "audience": "candidates",
+  "variant": "improved",
+  "model": "claude-opus-5-5",
+  "streamed": false,
+  "started_at": "2026-11-28T09:59:22+00:00",
+  "status": "complete",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 10158,
+    "completion_tokens": 2422,
+    "total_tokens": 12580
+  },
+  "error": null,
+  "duration_seconds": 20.21,
+  "included_ids": [
+    "A1",
+    "A2",
+    "A3",
+    "A4"
+  ],
+  "word_count": 248,
+  "checks": {
+    "kind": "brochure",
+    "cited_ids": [
+      "A1",
+      "A2",
+      "A3"
+    ],
+    "included_ids": [
+      "A1",
+      "A2",
+      "A3",
+      "A4"
+    ],
+    "unknown_ids": [],
+    "source_list": [
+      {
+        "source_id": "A1",
+        "url": "https://www.ivory.co.il/"
+      },
+      {
+        "source_id": "A2",
+        "url": "https://www.ivory.co.il/jobs"
+      },
+      {
+        "source_id": "A3",
+        "url": "https://www.ivory.co.il/stores.html"
+      }
+    ],
+    "missing_info_mentions": 2,
+    "word_count": 248,
+    "word_range": [
+      200,
+      300
+    ],
+    "word_count_ok": true,
+    "structure": {
+      "expected": [
+        "# אייבורי: מידע למועמדים לעבודה",
+        "## במה החברה עוסקת",
+        "## תפקידים וצוותים שפורסמו",
+        "## סביבת העבודה",
+        "## תהליך המועמדות"
+      ],
+      "missing": [],
+      "in_order": true
+    },
+    "problems": [],
+    "passed": true
+  },
+  "paths": {
+    "prompt": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095839-d673\\prompts\\ivory_candidates.json",
+    "context": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095839-d673\\contexts\\ivory_candidates.json",
+    "output": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095839-d673\\outputs\\ivory_candidates.md",
+    "metadata": "C:\\Users\\User\\Documents\\cursor\\LLL_HM\\LLM_HW1_Brochure_Maker\\runs\\20261128-095839-d673\\outputs\\ivory_candidates.json"
+  }
+}

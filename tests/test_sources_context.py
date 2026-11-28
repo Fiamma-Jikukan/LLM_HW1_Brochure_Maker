@@ -16,8 +16,10 @@ from brochure.sources import (
 LINE = "Acme helps teams ship software faster.\n"
 
 
-def text(n: int) -> str:
-    return (LINE * (n // len(LINE) + 1))[:n]
+def text(n: int, tag: str = "") -> str:
+    """n characters of page text; `tag` makes each page's lines its own (not site-wide text)."""
+    line = f"{tag}{LINE}"
+    return (line * (n // len(line) + 1))[:n]
 
 
 def accepted(*urls):
@@ -98,7 +100,7 @@ def test_no_replacement_beyond_the_page_limit(collection, acme, acme_home):
 # ---------------------------------------------------------------------------
 
 def src(sid, n, status="ok"):
-    return {"source_id": sid, "url": f"https://acme.com/{sid}", "title": f"Page {sid}", "text": text(n),
+    return {"source_id": sid, "url": f"https://acme.com/{sid}", "title": f"Page {sid}", "text": text(n, f"{sid}: "),
             "status": status, "error": None if status == "ok" else "HTTP 404"}
 
 

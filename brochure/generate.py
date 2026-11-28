@@ -25,7 +25,7 @@ from pathlib import Path
 
 from .checks import check_output, format_checks
 from .config import AUDIENCES, MAX_TOKENS, MODEL, Company, get_client, mask_secrets
-from .context import save_context
+from .context import save_context, write_text_exact
 from .prompts import baseline_brochure_messages, brochure_messages, comparison_messages
 from .runlog import RunLog
 from .streaming import _usage_dict, accumulate_stream
@@ -161,7 +161,7 @@ def _generate(name: str, messages: list[dict], context: dict, run: RunLog,
     shown.final(result["text"], result["status"], result["error"])
 
     paths["output"].parent.mkdir(parents=True, exist_ok=True)
-    paths["output"].write_text(result["text"], encoding="utf-8")
+    write_text_exact(paths["output"], result["text"])          # exactly as received, no newline conversion
 
     checks = check_output(
         result["text"], context, kind=meta["action"], company_name=meta.get("company_name"),

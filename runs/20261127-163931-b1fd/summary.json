@@ -1,0 +1,16 @@
+{
+  "run_id": "20261127-163931-b1fd",
+  "model_calls": 0,
+  "planned_model_calls": 8,
+  "model_calls_by_action": {},
+  "repeated_attempts": 0,
+  "failed_model_calls": 0,
+  "model_seconds": 0,
+  "tokens_reported": {},
+  "calls_with_token_data": 0,
+  "site_requests": 1,
+  "site_requests_by_company": {
+    "MH": 1
+  },
+  "failed_site_requests": 1
+}

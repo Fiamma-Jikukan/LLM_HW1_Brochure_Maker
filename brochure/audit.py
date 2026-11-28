@@ -20,6 +20,7 @@ from pathlib import Path
 
 from .checks import CITATION_RE, cited_ids, split_source_list
 from .config import MISSING_INFO_PHRASE
+from .context import read_text_exact
 
 AUDIT_COLUMNS = ["claim_no", "brochure", "run_id", "claim", "source_id", "url",
                  "evidence", "verdict", "note"]
@@ -85,7 +86,7 @@ def sample_claims(run_dir: Path, names: list[str], per_brochure: int = 2) -> lis
 
     rows, claim_no = [], 0
     for name in names:
-        text = (run_dir / "outputs" / f"{name}.md").read_text(encoding="utf-8")
+        text = read_text_exact(run_dir / "outputs" / f"{name}.md")
         meta = json.loads((run_dir / "outputs" / f"{name}.json").read_text(encoding="utf-8"))
         claims = factual_claims(text)[:per_brochure]
         for missing in range(per_brochure - len(claims)):

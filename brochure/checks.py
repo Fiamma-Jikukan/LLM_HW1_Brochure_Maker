@@ -29,6 +29,7 @@ from .config import (
     MISSING_INFO_PHRASE,
     SOURCES_HEADING,
 )
+from .context import read_text_exact
 from .prompts import AUDIENCE_GUIDES
 
 CITATION_RE = re.compile(r"\[\s*([A-Z]\d+(?:\s*[,;،]\s*[A-Z]\d+)*)\s*\]")
@@ -182,7 +183,7 @@ def check_saved_output(run_dir: Path, name: str) -> dict:
     outputs/<name>.json (metadata) and contexts/<name>.json. Used to reproduce the results.
     """
     run_dir = Path(run_dir)
-    text = (run_dir / "outputs" / f"{name}.md").read_text(encoding="utf-8")
+    text = read_text_exact(run_dir / "outputs" / f"{name}.md")
     meta = json.loads((run_dir / "outputs" / f"{name}.json").read_text(encoding="utf-8"))
     context = json.loads((run_dir / "contexts" / f"{name}.json").read_text(encoding="utf-8"))
     return check_output(
